@@ -8,12 +8,14 @@ import { LinkCard } from '@/components/dashboard/link-card';
 import { CreateLinkModal } from '@/components/dashboard/create-link-modal';
 import { EmptyState } from '@/components/dashboard/empty-state';
 import { useToast } from '@/components/ui/toast';
+import { EditLinkModal } from '@/components/dashboard/edit-link-modal';
 
 export default function DashboardPage() {
   const [links, setLinks] = useState<LinkType[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [editLink, setEditLink] = useState<LinkType | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,6 +34,13 @@ export default function DashboardPage() {
   const handleCreated = (link: LinkType) => {
     setLinks((prev) => [link, ...prev]);
     toast('Link created successfully');
+  };
+
+  const handleUpdated = (updated: LinkType) => {
+    setLinks((prev) =>
+      prev.map((l) => (l.id === updated.id ? updated : l)),
+    );
+    toast('Link updated successfully');
   };
 
   const handleDeleted = (id: string) => {
@@ -129,7 +138,7 @@ export default function DashboardPage() {
       ) : (
         <div className="grid gap-3 animate-fade-in">
           {filteredLinks.map((link) => (
-            <LinkCard key={link.id} link={link} onDeleted={handleDeleted} />
+            <LinkCard key={link.id} link={link} onEdit={setEditLink} onDeleted={handleDeleted} />
           ))}
         </div>
       )}
@@ -139,6 +148,14 @@ export default function DashboardPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onCreated={handleCreated}
+      />
+
+      {/* Edit modal */}
+      <EditLinkModal
+        open={!!editLink}
+        link={editLink}
+        onClose={() => setEditLink(null)}
+        onUpdated={handleUpdated}
       />
     </>
   );

@@ -59,6 +59,12 @@ export function Navbar() {
           <a href="#how-it-works" className="px-4 py-2 text-sm text-stone-500 hover:text-stone-900 transition-colors rounded-lg">
             How it works
           </a>
+          <a href="#pricing" className="px-4 py-2 text-sm text-stone-500 hover:text-stone-900 transition-colors rounded-lg">
+            Pricing
+          </a>
+          <a href="#faq" className="px-4 py-2 text-sm text-stone-500 hover:text-stone-900 transition-colors rounded-lg">
+            FAQ
+          </a>
         </div>
 
         {/* Desktop CTA */}
@@ -103,6 +109,12 @@ export function Navbar() {
             </a>
             <a href="#how-it-works" onClick={() => setMenuOpen(false)} className="px-4 py-2.5 text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-lg transition-colors">
               How it works
+            </a>
+            <a href="#pricing" onClick={() => setMenuOpen(false)} className="px-4 py-2.5 text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-lg transition-colors">
+              Pricing
+            </a>
+            <a href="#faq" onClick={() => setMenuOpen(false)} className="px-4 py-2.5 text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-lg transition-colors">
+              FAQ
             </a>
           </div>
           <div className="flex flex-col gap-2">

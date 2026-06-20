@@ -6,9 +6,12 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/navbar';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
+import { PricingSection } from '@/components/landing/pricing-section';
+import { FaqSection } from '@/components/landing/faq-section';
+
 /* ─── Scroll reveal hook ─── */
 function useReveal() {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -78,6 +81,8 @@ export default function Home() {
   const [featuresRef, featuresVisible] = useReveal();
   const [stepsRef, stepsVisible] = useReveal();
   const [ctaRef, ctaVisible] = useReveal();
+  const [pricingRef, pricingVisible] = useReveal();
+  const [faqRef, faqVisible] = useReveal();
 
   useEffect(() => {
     api.health()
@@ -251,6 +256,18 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── Pricing ── */}
+      <PricingSection
+        visible={pricingVisible}
+        sectionRef={pricingRef}
+      />
+
+      {/* ── FAQ ── */}
+      <FaqSection
+        visible={faqVisible}
+        sectionRef={faqRef}
+      />
 
       {/* ── CTA ── */}
       <section className="py-20 sm:py-28 bg-white">
