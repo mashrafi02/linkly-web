@@ -9,6 +9,8 @@ import { StatCard } from '@/components/dashboard/stat-card';
 import { ClicksAreaChart } from '@/components/charts/clicks-area-chart';
 import { DonutChart } from '@/components/charts/donut-chart';
 import { BarList } from '@/components/charts/bar-list';
+import { usePlanFeatures } from '@/hooks/usePlanFeatures';
+import { UpgradeBadge } from '@/components/ui/upgrade-badge';
 
 type DateRange = '7d' | '30d' | '90d' | 'all';
 
@@ -26,7 +28,8 @@ export default function LinkAnalyticsPage() {
   const [link, setLink] = useState<LinkType | null>(null);
   const [analytics, setAnalytics] = useState<LinkAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
-  const [range, setRange] = useState<DateRange>('30d');
+  const [range, setRange] = useState<DateRange>('7d');
+  const { features, isFree } = usePlanFeatures();
 
   useEffect(() => {
     (async () => {
@@ -145,9 +148,13 @@ export default function LinkAnalyticsPage() {
               </svg>
               QR PNG
             </Button>
-            <Button variant="secondary" size="sm" onClick={() => downloadQr('svg')}>
-              QR SVG
-            </Button>
+            {features.qrFormats.includes('svg') ? (
+              <Button variant="secondary" size="sm" onClick={() => downloadQr('svg')}>
+                QR SVG
+              </Button>
+            ) : (
+              <UpgradeBadge feature="QR SVG" />
+            )}
           </div>
         </div>
       </div>
@@ -155,21 +162,33 @@ export default function LinkAnalyticsPage() {
       {/* Date range selector */}
       <div className="flex items-center gap-1 mb-6 bg-white rounded-xl border border-stone-200/80 p-1 w-fit">
         {([
-          ['7d', '7 days'],
-          ['30d', '30 days'],
-          ['90d', '90 days'],
-          ['all', 'All time'],
-        ] as [DateRange, string][]).map(([value, label]) => (
+          ['7d', '7 days', false],
+          ['30d', '30 days', isFree],
+          ['90d', '90 days', isFree],
+          ['all', 'All time', isFree],
+        ] as [DateRange, string, boolean][]).map(([value, label, locked]) => (
           <button
             key={value}
-            onClick={() => setRange(value)}
+            onClick={() => {
+              if (!locked) setRange(value);
+            }}
             className={`px-3.5 py-1.5 text-sm rounded-lg font-medium transition-all duration-200 ${
               range === value
                 ? 'bg-brand-50 text-brand-800 border border-brand-100'
-                : 'text-stone-500 hover:text-stone-700 hover:bg-stone-50'
+                : locked
+                  ? 'text-stone-300 cursor-not-allowed'
+                  : 'text-stone-500 hover:text-stone-700 hover:bg-stone-50'
             }`}
+            disabled={locked}
+            title={locked ? 'Upgrade to Pro for extended history' : undefined}
           >
             {label}
+            {locked && (
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="inline ml-1 -mt-0.5">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            )}
           </button>
         ))}
       </div>

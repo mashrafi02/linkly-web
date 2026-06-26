@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { Link as LinkType } from '@/types';
+import { usePlanFeatures } from '@/hooks/usePlanFeatures';
+import { UpgradeBadge } from '@/components/ui/upgrade-badge';
 
 interface EditLinkModalProps {
   open: boolean;
@@ -25,6 +27,7 @@ export function EditLinkModal({ open, link, onClose, onUpdated }: EditLinkModalP
   const [clickLimit, setClickLimit] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { features } = usePlanFeatures();
 
   // Populate fields when modal opens with a link
   useEffect(() => {
@@ -200,34 +203,60 @@ export function EditLinkModal({ open, link, onClose, onUpdated }: EditLinkModalP
                 </button>
               </div>
             ) : (
-              <Input
-                label="Password protection (optional)"
-                type="password"
-                placeholder="Set a password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative">
+                {!features.passwordProtection && (
+                  <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-xl z-10 flex items-center justify-center">
+                    <UpgradeBadge feature="Password protection" />
+                  </div>
+                )}
+                <Input
+                  label="Password protection (optional)"
+                  type="password"
+                  placeholder="Set a password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={!features.passwordProtection}
+                />
+              </div>
             )}
 
-            <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-stone-700">
-                Expiry date (optional)
-              </label>
-              <input
-                type="datetime-local"
-                value={expiresAt}
-                onChange={(e) => setExpiresAt(e.target.value)}
-                className="w-full h-11 px-3.5 bg-white rounded-xl text-sm text-stone-900 border border-stone-200 hover:border-stone-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition-all duration-200"
-              />
+            {/* Expiry */}
+            <div className="relative">
+              {!features.linkExpiry && (
+                <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-xl z-10 flex items-center justify-center">
+                  <UpgradeBadge feature="Link expiry" />
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-stone-700">
+                  Expiry date (optional)
+                </label>
+                <input
+                  type="datetime-local"
+                  value={expiresAt}
+                  onChange={(e) => setExpiresAt(e.target.value)}
+                  disabled={!features.linkExpiry}
+                  className="w-full h-11 px-3.5 bg-white rounded-xl text-sm text-stone-900 border border-stone-200 hover:border-stone-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition-all duration-200 disabled:opacity-50"
+                />
+              </div>
             </div>
 
-            <Input
-              label="Click limit (optional)"
-              type="number"
-              placeholder="e.g. 100"
-              value={clickLimit}
-              onChange={(e) => setClickLimit(e.target.value)}
-            />
+            {/* Click limit */}
+            <div className="relative">
+              {!features.clickLimits && (
+                <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-xl z-10 flex items-center justify-center">
+                  <UpgradeBadge feature="Click limits" />
+                </div>
+              )}
+              <Input
+                label="Click limit (optional)"
+                type="number"
+                placeholder="e.g. 100"
+                value={clickLimit}
+                onChange={(e) => setClickLimit(e.target.value)}
+                disabled={!features.clickLimits}
+              />
+            </div>
           </div>
         )}
 

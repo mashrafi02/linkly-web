@@ -3,9 +3,10 @@
 import { useState, FormEvent } from 'react';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { Link as LinkType } from '@/types';
+import { usePlanFeatures } from '@/hooks/usePlanFeatures';
+import { UpgradeBadge } from '@/components/ui/upgrade-badge';
 
 interface CreateLinkModalProps {
   open: boolean;
@@ -23,6 +24,7 @@ export function CreateLinkModal({ open, onClose, onCreated }: CreateLinkModalPro
   const [clickLimit, setClickLimit] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { features, isFree } = usePlanFeatures();
 
   const reset = () => {
     setUrl('');
@@ -55,9 +57,9 @@ export function CreateLinkModal({ open, onClose, onCreated }: CreateLinkModalPro
       const data: Record<string, unknown> = { originalUrl: url };
       if (title.trim()) data.title = title.trim();
       if (customSlug.trim()) data.customSlug = customSlug.trim();
-      if (password.trim()) data.password = password.trim();
-      if (expiresAt) data.expiresAt = new Date(expiresAt).toISOString();
-      if (clickLimit) data.clickLimit = parseInt(clickLimit, 10);
+      if (password.trim() && features.passwordProtection) data.password = password.trim();
+      if (expiresAt && features.linkExpiry) data.expiresAt = new Date(expiresAt).toISOString();
+      if (clickLimit && features.clickLimits) data.clickLimit = parseInt(clickLimit, 10);
 
       const link = (await api.createLink(data as any)) as LinkType;
       onCreated(link);
@@ -136,59 +138,69 @@ export function CreateLinkModal({ open, onClose, onCreated }: CreateLinkModalPro
             <polyline points="9 18 15 12 9 6" />
           </svg>
           Advanced options
+          {isFree && (
+            <span className="text-xs text-amber-600 font-medium ml-1">Pro</span>
+          )}
         </button>
 
         {showAdvanced && (
           <div className="space-y-4 pt-1 animate-fade-in">
-            <Input
-              label="Password protection (optional)"
-              type="password"
-              placeholder="Set a password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-
-            <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-stone-700">
-                Expiry date (optional)
-              </label>
-              <input
-                type="datetime-local"
-                value={expiresAt}
-                onChange={(e) => setExpiresAt(e.target.value)}
-                className="w-full h-11 px-3.5 bg-white rounded-xl text-sm text-stone-900 border border-stone-200 hover:border-stone-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition-all duration-200"
+            {/* Password */}
+            <div className="relative">
+              {!features.passwordProtection && (
+                <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-xl z-10 flex items-center justify-center">
+                  <UpgradeBadge feature="Password protection" />
+                </div>
+              )}
+              <Input
+                label="Password protection"
+                type="password"
+                placeholder="Set a password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={!features.passwordProtection}
               />
             </div>
 
-            <Input
-              label="Click limit (optional)"
-              type="number"
-              placeholder="e.g. 100"
-              value={clickLimit}
-              onChange={(e) => setClickLimit(e.target.value)}
-            />
+            {/* Expiry */}
+            <div className="relative">
+              {!features.linkExpiry && (
+                <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-xl z-10 flex items-center justify-center">
+                  <UpgradeBadge feature="Link expiry" />
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-stone-700">
+                  Expiry date
+                </label>
+                <input
+                  type="datetime-local"
+                  value={expiresAt}
+                  onChange={(e) => setExpiresAt(e.target.value)}
+                  disabled={!features.linkExpiry}
+                  className="w-full h-11 px-3.5 bg-white rounded-xl text-sm text-stone-900 border border-stone-200 hover:border-stone-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition-all duration-200 disabled:opacity-50"
+                />
+              </div>
+            </div>
+
+            {/* Click limit */}
+            <div className="relative">
+              {!features.clickLimits && (
+                <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-xl z-10 flex items-center justify-center">
+                  <UpgradeBadge feature="Click limits" />
+                </div>
+              )}
+              <Input
+                label="Click limit"
+                type="number"
+                placeholder="e.g. 100"
+                value={clickLimit}
+                onChange={(e) => setClickLimit(e.target.value)}
+                disabled={!features.clickLimits}
+              />
+            </div>
           </div>
         )}
-
-        {/* Actions */}
-        <div className="flex gap-3 pt-2">
-          <Button type="button" variant="secondary" size="md" onClick={handleClose} className="flex-1">
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" size="md" disabled={loading} className="flex-1">
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Creating...
-              </span>
-            ) : (
-              'Create link'
-            )}
-          </Button>
-        </div>
       </form>
     </Modal>
   );
