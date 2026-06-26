@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth, AUTH_CHANGE_EVENT } from '@/lib/auth';
 import { User } from '@/types';
 
 export function useAuth(redirectTo = '/login') {
@@ -10,7 +10,7 @@ export function useAuth(redirectTo = '/login') {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const syncUser = useCallback(() => {
     const currentUser = auth.getUser();
     const token = auth.getToken();
 
@@ -22,6 +22,14 @@ export function useAuth(redirectTo = '/login') {
     setUser(currentUser);
     setLoading(false);
   }, [router, redirectTo]);
+
+  useEffect(() => {
+    syncUser();
+
+    // Re-sync when any tab/component updates auth
+    window.addEventListener(AUTH_CHANGE_EVENT, syncUser);
+    return () => window.removeEventListener(AUTH_CHANGE_EVENT, syncUser);
+  }, [syncUser]);
 
   const logout = () => {
     auth.logout();

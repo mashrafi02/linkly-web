@@ -1,4 +1,4 @@
-import { HealthStatus } from '@/types';
+import { HealthStatus, BillingStatus } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -97,4 +97,15 @@ export const api = {
     const q = params.toString();
     return request(`/analytics/${linkId}${q ? `?${q}` : ''}`);
   },
+
+  subscribe: (plan: 'pro' | 'business') =>
+    request('/billing/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ plan }),
+    }),
+
+  getBillingStatus: () => request<BillingStatus>('/billing/status'),
+
+  cancelSubscription: () =>
+    request('/billing/cancel', { method: 'POST' }),
 };

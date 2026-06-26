@@ -23,6 +23,16 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    href: '/billing',
+    label: 'Billing',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="1" y="4" width="22" height="16" rx="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
+      </svg>
+    ),
+  },
 ];
 
 export function Sidebar({ user, onLogout, mobileOpen, onMobileClose }: SidebarProps) {
@@ -69,6 +79,30 @@ export function Sidebar({ user, onLogout, mobileOpen, onMobileClose }: SidebarPr
           })}
         </div>
       </nav>
+
+      {/* Upgrade prompt (only for free users) */}
+      {user.plan === 'free' && (
+        <div className="px-3 pb-2">
+          <Link
+            href="/billing?plan=pro"
+            onClick={onMobileClose}
+            className="block p-3 rounded-xl bg-gradient-to-br from-brand-800 to-brand-950 text-white group hover:shadow-glow transition-all duration-300"
+          >
+            <p className="text-xs font-medium text-brand-200 mb-0.5">
+              Free plan
+            </p>
+            <p className="text-sm font-semibold">
+              Upgrade to Pro
+            </p>
+            <p className="text-xs text-brand-300 mt-1 flex items-center gap-1">
+              Get unlimited links
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="group-hover:translate-x-0.5 transition-transform">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </p>
+          </Link>
+        </div>
+      )}
 
       {/* User footer */}
       <div className="p-3 border-t border-stone-100">

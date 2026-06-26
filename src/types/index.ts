@@ -47,3 +47,10 @@ export type HealthStatus = {
   postgres: 'connected' | 'disconnected';
   redis: 'connected' | 'disconnected';
 };
+
+export interface BillingStatus {
+  subscription: {
+    cancelAtPeriodEnd: boolean;
+    currentPeriodEnd: string;
+  } | null;
+}

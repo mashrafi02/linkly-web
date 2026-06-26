@@ -2,11 +2,13 @@ import { AuthResponse, User } from '@/types';
 
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
+export const AUTH_CHANGE_EVENT = 'auth-change';
 
 export const auth = {
   saveSession(data: AuthResponse): void {
     localStorage.setItem(TOKEN_KEY, data.accessToken);
     localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+    window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
   },
 
   getToken(): string | null {
@@ -27,5 +29,6 @@ export const auth = {
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
   },
 };
