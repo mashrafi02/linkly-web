@@ -1,7 +1,18 @@
 import { useAuth } from './useAuth';
 import { useMemo } from 'react';
 
-const PLAN_FEATURES = {
+type QrFormat = 'png' | 'svg';
+
+type PlanFeatures = {
+  maxLinks: number;
+  analyticsRetentionDays: number;
+  qrFormats: readonly QrFormat[];
+  passwordProtection: boolean;
+  linkExpiry: boolean;
+  clickLimits: boolean;
+};
+
+const PLAN_FEATURES: Record<'free' | 'pro' | 'business', PlanFeatures> = {
   free: {
     maxLinks: 20,
     analyticsRetentionDays: 7,
@@ -26,7 +37,7 @@ const PLAN_FEATURES = {
     linkExpiry: true,
     clickLimits: true,
   },
-} as const;
+};
 
 export function usePlanFeatures() {
   const { user } = useAuth();

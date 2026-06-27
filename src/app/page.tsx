@@ -160,14 +160,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/*
-            DASHBOARD PREVIEW PLACEHOLDER
-            ──────────────────────────────
-            Replace this with a real screenshot of your dashboard (step 15).
-            Take a 1280×800 screenshot, add a subtle border radius, and
-            a soft shadow. Export as WebP for performance.
-            For now, this is a styled placeholder.
-          */}
           <div className="mt-16 sm:mt-20 max-w-4xl mx-auto animate-fade-in-up opacity-0 delay-500">
             <div className="relative rounded-2xl border border-stone-200/80 shadow-lifted bg-white overflow-hidden">
               <div className="border-b border-stone-100 px-4 py-3 flex items-center gap-2">
@@ -182,9 +174,14 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="aspect-[16/9] bg-gradient-to-br from-stone-50 to-stone-100 flex items-center justify-center">
-                <p className="text-stone-300 text-sm">Dashboard preview — add screenshot after step 15</p>
-              </div>
+              <Image
+                src="/images/dashboard-analytics-banner.png"
+                alt="Linkly dashboard showing link analytics"
+                width={1189}
+                height={917}
+                priority
+                className="w-full h-auto"
+              />
             </div>
           </div>
         </div>

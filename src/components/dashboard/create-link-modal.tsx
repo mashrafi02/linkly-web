@@ -3,6 +3,7 @@
 import { useState, FormEvent } from 'react';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { Link as LinkType } from '@/types';
 import { usePlanFeatures } from '@/hooks/usePlanFeatures';
@@ -201,6 +202,26 @@ export function CreateLinkModal({ open, onClose, onCreated }: CreateLinkModalPro
             </div>
           </div>
         )}
+
+        {/* Actions */}
+        <div className="flex gap-3 pt-2">
+          <Button type="button" variant="secondary" size="md" onClick={handleClose} className="flex-1">
+            Cancel
+          </Button>
+          <Button type="submit" variant="primary" size="md" disabled={loading} className="flex-1">
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Creating...
+              </span>
+            ) : (
+              'Create link'
+            )}
+          </Button>
+        </div>
       </form>
     </Modal>
   );
