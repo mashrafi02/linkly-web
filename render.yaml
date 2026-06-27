@@ -6,13 +6,12 @@ services:
     dockerContext: .
     plan: free
     region: oregon
-    dockerBuildArgs:
+    envVars:
+      - key: NODE_ENV
+        value: production
       - key: NEXT_PUBLIC_API_URL
         sync: false
       - key: NEXT_PUBLIC_APP_URL
         sync: false
       - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
         sync: false
-    envVars:
-      - key: NODE_ENV
-        value: production
